@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://service.auth" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://service.auth" xmlns:intf="http://service.auth" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://service.auth" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="grantAuthorization">
+    <complexType>
+     <sequence>
+      <element name="subject" type="xsd:string"/>
+      <element name="predicate" type="xsd:string"/>
+      <element name="object" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="grantAuthorizationResponse">
+    <complexType>
+     <sequence>
+      <element name="grantAuthorizationReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="revokeAuthorization">
+    <complexType>
+     <sequence>
+      <element name="subject" type="xsd:string"/>
+      <element name="predicate" type="xsd:string"/>
+      <element name="object" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="revokeAuthorizationResponse">
+    <complexType>
+     <sequence>
+      <element name="revokeAuthorizationReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="attestAttribute">
+    <complexType>
+     <sequence>
+      <element name="key" type="xsd:string"/>
+      <element name="value" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="attestAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="attestAttributeReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="query">
+    <complexType/>
+   </element>
+   <element name="queryResponse">
+    <complexType>
+     <sequence>
+      <element name="queryReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="grantAuthorizationRequest">
+
+      <wsdl:part element="impl:grantAuthorization" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="grantAuthorizationResponse">
+
+      <wsdl:part element="impl:grantAuthorizationResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="queryRequest">
+
+      <wsdl:part element="impl:query" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="attestAttributeResponse">
+
+      <wsdl:part element="impl:attestAttributeResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="revokeAuthorizationRequest">
+
+      <wsdl:part element="impl:revokeAuthorization" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="queryResponse">
+
+      <wsdl:part element="impl:queryResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="revokeAuthorizationResponse">
+
+      <wsdl:part element="impl:revokeAuthorizationResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="attestAttributeRequest">
+
+      <wsdl:part element="impl:attestAttribute" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="AuthorizationService">
+
+      <wsdl:operation name="grantAuthorization">
+
+         <wsdl:input message="impl:grantAuthorizationRequest" name="grantAuthorizationRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:grantAuthorizationResponse" name="grantAuthorizationResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="revokeAuthorization">
+
+         <wsdl:input message="impl:revokeAuthorizationRequest" name="revokeAuthorizationRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:revokeAuthorizationResponse" name="revokeAuthorizationResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="attestAttribute">
+
+         <wsdl:input message="impl:attestAttributeRequest" name="attestAttributeRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:attestAttributeResponse" name="attestAttributeResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="query">
+
+         <wsdl:input message="impl:queryRequest" name="queryRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:queryResponse" name="queryResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="AuthorizationServiceSoapBinding" type="impl:AuthorizationService">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="grantAuthorization">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="grantAuthorizationRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="grantAuthorizationResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="revokeAuthorization">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="revokeAuthorizationRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="revokeAuthorizationResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="attestAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="attestAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="attestAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="query">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="queryRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="queryResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="AuthorizationServiceService">
+
+      <wsdl:port binding="impl:AuthorizationServiceSoapBinding" name="AuthorizationService">
+
+         <wsdlsoap:address location="http://localhost:8080/AuthorizationService_prototype/services/AuthorizationService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

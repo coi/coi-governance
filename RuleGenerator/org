@@ -1,0 +1,31 @@
+(defrule Rule_0
+"Desc: Power: null "
+	(admit_req (action REQUEST) (sender ?var_1) (receiver ?var_2) (type membership))
+	(policy (id 1)(role ?var_3))
+ => 
+
+	(assert (ADMIT(org OOI)(member  ?var_1)(role  ?var_3)(type membership))
+)
+(defrule Rule_2
+"Desc: Power: null "
+	(policy (id 3)(member ?var_100))
+ => 
+
+	(assert (EJECT(org OOI)(member  ?var_100))
+)
+(defrule Rule_4
+"Desc: Commitment: null "
+	(eval_request (attribute_name value))
+	(policy (id 5))
+ => 
+
+	(assert (eval_response(attribute_name null))
+)
+(defrule Rule_6
+"Desc: Prohibition: null "
+	(SHARE (object obj_id))
+	(policy (id 7)(member ?var_id))
+ => 
+
+	(assert (EJECT(org OOI)(member  ?var_id))
+)

@@ -1,0 +1,152 @@
+// Capitalized words describe predicates or constants that apply to
+// our OOI-wide domain models
+
+// Lowercase words  refer to predicates or constants that are specific
+// to the particular situation being defined
+
+// A leading ? identifies a variable, e.g., ?sensor
+
+// Below we define an Org that we call DataOrg; this Org lives within
+// the OOI, which would itself be an Org that provides identity to its
+// members and enforces sanctions such as ejection.  Hence, OOI serves
+// as an institution in the sense of eBay or NCSU.
+
+// We could include the idea of inheriting from other, more general,
+// Orgs.  In that case, some roles (e.g., owner) could be inherited as
+// well. 
+// We could say
+// Org DataOrg extends ResourceOrg ...
+// However, the semantics of inheritance can be tricky
+
+Org DataOrg Within OOI {
+  // Below, *this* refers to the current instance of DataOrg
+
+ Capability:Domain read, write;
+ Predicate:Domain Sensor;
+
+ Capability:Communicative Request, Grant; //needs Who, Whom, What
+
+ Capability:Organizational Admit, Eject; //needs Who, Org, Role, Whom
+
+ Predicate:Resource Owns; //needs Who, What
+
+
+  Role owner Singleton {
+
+    Power {
+      If OOI:Public(?member)
+	Then Admit(?owner, this, DataOrg:*, ?member)
+	}
+
+    Power {
+      If DataOrg:reader(this, ?member)
+	Then Eject(?owner, this, DataOrg:reader, ?member)
+	}
+
+    Power {
+      If DataOrg:researcher(this, ?member)
+	Then Eject(?owner, this, DataOrg:researcher, ?member)
+	}
+
+
+  }
+
+  Role reader {
+    Qualification OOI:Public(?reader);
+    // OOI:Public means has a legitimate OOI account (and possibly nothing
+    // else) 
+
+    // Can we do without authorization in this example?
+    Authorization {
+      If Sensor(?sensor)
+	AND Owns(this, ?sensor)
+	AND Produces(?sensor, ?datastream)
+	ThenMay view(?reader, ?datastream);
+    }
+
+    Prohibition {
+      If OOI:NonGrata(?outsider)
+	// OOI:NonGrata is a special role for those not identified to OOI or
+	// have already been kicked out from OOI, e.g., because of malfeasance
+	AND Sensor(?sensor)
+	AND Owns(this, ?sensor)
+	AND Produces(?sensor, ?datastream)
+	ThenMayNot share(?reader, ?outsider, ?datastream);
+    }
+
+    Sanction {
+      Sanctioner ?owner;
+      Penalty Eject(?owner, this, OOI:reader, ?reader); 
+      // Additionally, Eject may put the reader into OOI:NonGrata
+    }
+
+    Commitment {
+      Debtor ?owner;
+      Creditor ?reader;
+      Antecedent
+	Request {
+	Who ?reader;
+	Whom ?owner;
+	What read(?reader, ?sensor)
+	  }
+      AND
+	Sensor(?sensor)
+	AND
+	Owns(?owner, ?sensor);
+
+      Consequent 
+	Grant {
+	Who ?owner;
+	Whom ?reader;
+	What permission(read(?reader, ?sensor))
+	  }
+    }
+
+    // Notice that there is an implied "completion" of each commitment via
+    // the scoping clauses.  For example, the above commitment's
+    // antecedent and consequent would be interpreted as including a
+    // reference to the current scope in each predicate application along
+    // with a conjunction in the antecedent of the expression
+    // valid(?scope).  This would result in the following expression.
+
+    // Question: Should we write the completed form below or the shorter
+    // form above?  Tradeoff clarity with length
+
+    Commitment {
+      Debtor ?owner;
+      Creditor ?reader;
+      Antecedent
+	Request {
+	Who ?reader;
+	Whom ?owner;
+	What read(?scope, ?reader, ?sensor)
+	  }
+      AND
+	Sensor(?scope, ?sensor)
+	AND
+	Owns(?scope, ?owner, ?sensor);
+      AND
+	Valid(?scope);
+
+      Consequent 
+	Grant {
+	Who ?owner;
+	Whom ?reader;
+	What permission(read(?scope, ?reader, ?sensor))
+	  }
+    }
+  }
+
+  Role researcher {
+    Qualification OOI:Staff(?researcher);
+    //OOI:Staff means on the staff of an OOI-member institution
+
+    Authorization read(?researcher, ?sensor); 
+
+    Authorization {
+      If Sensor(?sensor)
+	AND Owns(this, ?sensor)
+	Then reset(?reader, ?sensor);
+    }
+  }
+}

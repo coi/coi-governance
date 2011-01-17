@@ -1,0 +1,204 @@
+// DERIVED FROM community.org and PeerNegotiate.org
+
+// Below we define an Org that we call AffiliationOrg; this Org lives
+// within the OOI, which would itself be an Org that provides identity
+// to its members and enforces sanctions such as ejection.  Hence, OOI
+// serves as an institution in the sense of eBay or NCSU.
+
+
+// The following properties are specific to the Affiliation Org domain
+ Predicate:Domain D_SharableResource(?resource);
+ Competence:Domain A_Share(?member, ?outsider, ?resource, ?capability);
+
+Org AffiliationOrg Within OOI {
+  // Below, *thisOrg* refers to the current instance of DataOrg
+
+  Role Org Singleton {
+// This is the present community
+    
+    Power {
+// If something is a legitimate OOI community, we can admit it as
+// playing the role affiliateOrg
+      If OOI:Community(?affiliateOrg)
+      Then P_Admit(thisOrg, thisOrg, AffiliationOrg:affiliateOrg, ?affiliateOrg)
+    }
+
+    Power {
+// If something is a legitimate OOI member, we can admit it as a
+// member
+      If OOI:Public(?member)
+      Then P_Admit(thisOrg, thisOrg, AffiliationOrg:member, ?member)
+    }
+
+    Power {
+// We can eject anyone (community or individual) from any role
+      If AffiliationOrg:*(thisOrg, ?anyRole)
+      Then P_Eject(thisOrg, thisOrg, AffiliationOrg:*, ?anyRole)
+    }
+
+    Power {
+      If S_Registrand(thisOrg, ?member, ?resource, ?capability)
+      Then R_Withdraw(thisOrg, thisOrg, ?resource, ?capability)
+    }
+
+    Can {
+      D_Evaluate(S_Member(thisOrg, ?member, ?aRole));
+    }
+
+    Can {
+      D_Evaluate(S_Registrand(thisOrg, ?member, ?resource, ?capability));
+    }
+
+  }
+
+  Role affiliateOrg (?affiliateOrg) {
+// This is the role for a community that becomes an affiliate of this
+// community
+
+   Power {
+// The community that is an affiliateOrg of this community can admit
+// its members to be affiliateMembers of this community.  The idea is
+// that the affiliateOrg can take selected roles and assign to them
+// powers and privileges corresponding to the designated
+// AffiliateMember role in this community
+     If S_Member(?affiliateOrg, ?otherMember, ?role)
+       Then P_Admit(?affiliateOrg, thisOrg, AffiliationOrg:AffiliateMember, ?otherMember)
+  }
+
+  Role AffiliateMember (?affiliateMember) extends GenericMember {
+
+// Like the member role but potentially somewhat weaker
+
+  }
+
+  Role member (?member) extends GenericMember {
+
+  }
+
+  Role GenericMember (?member) {
+    Qualification OOI:Public(?member);
+
+    //member viewed as a resource owner
+    Power {
+      If SharableResource(?resource)
+       AND S_Owns(?member, ?resource)
+       AND S_Supports(?resource, ?capability)
+      Then R_Contribute(?member, thisOrg, ?resource, ?capability)
+    }
+
+    //member viewed as a resource owner
+    Power {
+      If S_Registrand(thisOrg, ?member, ?resource, ?capability)
+      Then R_Withdraw(?member, thisOrg, ?resource, ?capability)
+    }
+
+    //member viewed as a resource owner
+    // Below, the acquired state is as in OV-5
+    Authorization {
+      If S_Registrand(thisOrg, ?member, ?resource, ?capability)
+       AND NOT S_inState(acquired, ?resource, ?capability)
+      ThenMay R_Withdraw(?member, thisOrg, ?resource, ?capability)
+    }
+
+    //member viewed as a resource user
+    Authorization {
+      If S_Registrand(thisOrg, ?owner, ?resource, ?capability)
+      ThenMay
+         Request {
+          Who ?member;
+          Whom ?owner;
+          What D_Apply(?member, ?resource, ?capability)
+         }
+     }
+
+    //member viewed as a resource owner
+    Power {
+      If S_Registrand(thisOrg, ?member, ?resource, ?capability)
+	AND S_Member(thisOrg, ?user, ?role)
+	Then N_Grant(?member, ?user,
+		     S_Authorization(?user, D_Apply(?user, ?resource, ?capability)))
+    }
+
+    //member viewed as a resource owner
+    Power {
+      If S_Registrand(thisOrg, ?member, ?resource, ?capability)
+	AND S_Member(thisOrg, ?user, ?role)
+	AND S_Authorization(?member, ?user,
+                      D_Apply(?user, ?resource, ?capability))
+      Then N_Cancel(?member, ?user, 
+		    S_Authorization(?user, D_Apply(?user, ?resource, ?capability)))
+    }
+
+    //member viewed as a resource user
+    Prohibition {
+      If NOT AffiliationOrg:member(?outsider)
+       AND S_Registrand(thisOrg, ?owner, ?resource, ?capability)
+      ThenMayNot A_Share(?member, ?outsider, ?resource, ?capability);
+      Sanction {
+       Sanctioner thisOrg;
+       P_Eject(thisOrg, thisOrg, AffiliationOrg:*, ?member); 
+      // Additionally, P_Eject may put the member into OOI:NonGrata;
+      // in fact, the Sanctioner should place the member into
+      // OOI:NonGrata; otherwise it is not a true punishment (because
+      // P_Eject is a Power anyway).  Doing so at the OOI level is an
+      // example of escalation.
+      }
+    }
+
+    Commitment {
+      Debtor thisOrg;
+      Creditor ?member;
+      Antecedent
+       Request {
+        Who ?member;
+        Whom thisOrg;
+        What D_Apply(?member, ?resource, ?capability)
+       }
+      AND S_inState(availableCapacity, ?resource, ?capability)
+	// implicitly AND S_Authorization Consequent
+
+      Consequent 
+       N_Grant {
+       Who thisOrg;
+       Whom ?member;
+       What D_Apply(?member, ?resource, ?capability)
+      }
+    }
+
+    Commitment {
+      Debtor thisOrg;
+      Creditor ?member;
+      Antecedent
+       Request {
+        Who ?member;
+        Whom thisOrg;
+        What D_Evaluate(S_Registrand(thisOrg, ?member, ?resource, ?capability))
+      }
+      Consequent 
+       Inform {
+        Who thisOrg;
+        Whom ?member;
+        What S_Registrand(thisOrg, ?member, ?resource, ?capability)
+   }
+    }
+
+    Commitment {
+      Debtor thisOrg;
+      Creditor ?member;
+      Antecedent
+       Request {
+        Who ?member;
+        Whom thisOrg;
+        What D_Evaluate (S_Member(thisOrg, ?m, ?anyRole))
+      }
+      Consequent 
+       Inform {
+        Who thisOrg;
+        Whom ?member;
+        What S_Member(thisOrg, ?m, ?anyRole)
+       }
+    }
+
+  }
+
+}

@@ -1,0 +1,66 @@
+// Capitalized words describe properties or constants that apply to
+// our OOI-wide domain models
+
+// Lowercase words refer to properties or constants that are specific
+// to the particular situation being defined
+
+// A leading ? identifies a variable, e.g., ?sensor
+
+// OOI:Public means has a legitimate OOI account (and possibly nothing
+// else)
+
+////////////////////////////////////////////////////////////////////////
+// The following are the generic properties of our formal governance
+// model, and may be used in any specification.
+
+// The following are the signatures of the various properties that we
+// use.  These are introduced in the governance models (see
+// governance-models.vsd).  
+
+// The prefixes of the property names ("C_" and such) are introduced
+// in the governance models vocabulary.
+
+ Capability:Communicative C_Request (?Who, ?Whom, ?What);
+ Capability:Normative N_Grant(?Who, ?Whom, ?What);
+ Capability:Normative N_Revoke(?Who, ?fromWhom, ?What);
+
+ Capability:Participation P_Admit(?Who, ?Org, ?Role, ?Whom);
+ Capability:Participation P_Eject(?Who, ?Org, ?Role, ?Whom);
+
+ Capability:Resource R_Contribute(?owner, ?anOrg, ?aResource, ?aCapability);
+ Capability:Resource R_Withdraw(?owner, ?anOrg, ?aResource, ?aCapability);
+
+  // A S_Member is any principal playing any role in an Org
+ Predicate:Participation S_Member(?anOrg, ?aPrincipal, ?aRole);
+
+  // A S_Registrand (note that the last letter is "d") is a resource
+  // that has been contributed (and not yet withdrawn) to an org; the
+  // contributor is the "registrant" 
+ Predicate:Participation S_Registrand (?anOrg, ?aRegistrant, ?aResource, ?aCapability);
+
+  // S_Owns simply reflects the idea that a principal owns a resource.
+  // In some cases, we could instead apply an alternative relationship
+  // such as "controls" or "represents" but then we would need to
+  // describe how such an alternative relationship arises.  Mostly, it
+  // would be rooted in the owner transferring its powers to another
+  // principal (in the sense of a power of attorney).  In some cases,
+  // it could involve stewardship of a resource wherein the owner of a
+  // resource may be divested of all authority over it, and such
+  // authority invested in another party.
+ Predicate:Participation S_Owns(?Who, ?What);
+
+ Capability:Domain D_Apply(?member, ?resource, ?capability);
+ Capability:Domain D_Evaluate(?expression);
+
+ Predicate:Resource S_inState(?state, ?resource, ?capability);
+ Predicate:Resource S_Supports(?resource, ?capability);
+
+ // R_Contribute and R_Withdraw apply at the granularity of a
+ // capability; we can consider capabilities that bundle other
+ // capabilities.
+
+ R_Contribute(?member, thisOrg, ?resource, ?capability) causes
+   S_Registrand(thisOrg, ?member, ?resource, ?capability);
+
+ R_Withdraw(?member, thisOrg, ?resource, ?capability) causes
+   NOT S_Registrand(thisOrg, ?member, ?resource, ?capability);

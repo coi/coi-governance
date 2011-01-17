@@ -1,0 +1,254 @@
+// The following properties are specific to the Messaging Service domain
+
+Predicate:Resource S_ValidTopic(?topic);
+Predicate:Participation S_RegisteredTopic(?distributor, ?communicator, ?aTopic);
+
+Capability:Domain R_RegisterTopic(?communicator, ?distributor, ?aTopic)
+  causes
+  S_RegisteredTopic(?distributor, ?communicator, ?aTopic);
+
+Capability:Domain R_DeregisterTopic(?communicator, ?distributor, ?aTopic)
+  causes
+  NOT S_RegisteredTopic(?distributor, ?communicator, ?aTopic);
+
+Predicate:Participation R_Subscription(?distributor, ?communicator, ?topic);
+
+Capability:Domain R_Subscribe(?distributor, ?communicator, ?topic)
+  causes
+  R_Subscription(?distributor, ?communicator, ?topic);
+
+Capability:Domain R_Unsubscribe(?distributor, ?communicator, ?topic)
+  causes
+  NOT R_Subscription(?distributor, ?communicator, ?topic)
+
+Capability:Domain R_Publish(?publisher, ?topic, ?message);
+Capability:Domain R_Notify(?distributor, ?subscriber, ?topic, ?message);
+
+
+Org ExchangeSpaceOrg Within OOI {
+ // Below, *thisOrg* refers to the current instance of ExchangeSpaceOrg
+
+///////////////////////////////////////////////////////////////////////////
+
+ Role Org Singleton {
+
+// This is the present exchange space
+// The constant *thisOrg* refers to this Singleton throughout this
+// specification 
+
+   Power {
+// If something is a legitimate OOI entity, we can admit it as playing
+// the role Communicator or the role Distributor
+     If OOI:Public(?entity)
+     Then P_Admit(thisOrg, thisOrg, ExchangeSpaceOrg:*, ?entity)
+   }
+
+   Power {
+// We can eject any entity from any role
+     If ExchangeSpaceOrg:*(thisOrg, ?anyRole)
+     Then P_Eject(thisOrg, thisOrg, ExchangeSpaceOrg:*, ?anyRole)
+   }
+
+   Can {
+     D_Evaluate(S_Member(thisOrg, ?member, ?aRole));
+   }
+
+ }
+
+//////////////////////////////////////////////////////////////////////
+
+ Role GenericMember (?member) {
+   Qualification OOI:Public(?member);
+
+// The following powers are largely common to all principals, since
+// they reflect their autonomy, and provide them an ability to
+// negotiate with each other
+   Power {
+     N_Propose(?who, ?whom, ?terms);
+   }
+
+   Power {
+     If N_Propose(?who, ?whom, ?terms)
+     Then
+     N_Accept(?who, ?whom, ?terms);
+   }
+
+   Power {
+     If N_Propose(?who, ?whom, ?terms)
+     Then
+     N_Reject(?who, ?whom, ?terms);
+   }
+
+ }
+
+////////////////////////////////////////////////////////////////////////
+ Role Communicator (?communicator) extends GenericMember {
+// This is the role for any entity that becomes a "user client" of this
+// exchange space
+
+   // The communicator (usually as a publisher) creates a Topic by
+   // registering it with a distributor
+   Power {
+     If S_ValidTopic(?topic)
+       AND ExchangeSpaceOrg:Distributor(?distributor)
+     Then 
+      C_Request {
+       Who ?communicator;
+       Whom ?distributor;
+       What R_RegisterTopic(?communicator, ?distributor, ?topic)
+       }
+    }
+
+   // The communicator who registered a Topic deregisters it from the
+   // distributor with which it was registered
+   Power { 
+     If ExchangeSpaceOrg:Distributor(?distributor)
+       AND S_RegisteredTopic(?distributor, ?communicator, ?topic)
+     Then
+      R_DeregisterTopic(?communicator, ?distributor, ?topic)
+       }
+    }
+
+   // Any communicator publishes a message to a Topic 
+   // In some cases, we can restrict publishing to the communicator
+   // who registered a given Topic (but not in the following) 
+   Power {
+     If ExchangeSpaceOrg:Distributor(?distributor)
+       AND S_RegisteredTopic(?distributor, ?_, ?topic)
+     Then
+       What R_Publish(?communicator, ?topic, ?message)
+     }
+
+   // Any communicator subscribes to a Topic 
+   Power {
+     If ExchangeSpaceOrg:Distributor(?distributor)
+       AND S_RegisteredTopic(?distributor, ?_, ?topic)
+     Then
+        C_Request {
+         Who ?communicator;
+         Whom ?distributor;
+         What R_Subscribe(?distributor, ?communicator, ?topic)
+        }
+     }
+
+   // Any communicator unsubscribes from a Topic 
+   Power {
+     If ExchangeSpaceOrg:Distributor(?distributor)
+       AND S_RegisteredTopic(?distributor, ?_, ?topic)
+       AND R_Subscription(?distributor, ?communicator, ?topic)
+     Then
+        C_Request {
+         Who ?communicator;
+         Whom ?distributor;
+         What R_Unsubscribe(?distributor, ?communicator, ?topic)
+        }
+     }
+
+
+}
+
+////////////////////////////////////////////////////////////////////////
+ Role Distributor (?distributor) extends GenericMember {
+// This is the role for any entity that becomes an exchange point in this
+// exchange space
+
+   // We interpret a (message) Topic as a virtual resource registered
+   // with a distributor
+   Can {
+     D_Evaluate(S_RegisteredTopic(?distributor, ?registrant, ?topic));
+   }
+
+   Can {
+     D_Apply (R_RegisterTopic(?communicator, ?distributor, ?topic))
+   }
+
+   Can {
+     D_Apply (R_DeregisterTopic(?communicator, ?distributor, ?topic))
+   }
+
+   // For each topic, the distributor maintains a set of subscribers
+   Can {
+     D_Apply (R_Subscribe(?distributor, ?communicator, ?topic))
+   }
+
+   Can {
+     D_Apply (R_Unsubscribe(?distributor, ?communicator, ?topic))
+   }
+
+   // Any distributor may notify a communicator subscribing to a Topic
+   // of a message published to that Topic
+   Can {
+     If ExchangeSpaceOrg:Communicator(?communicator)
+       AND R_Subscription(?distributor, ?communicator, ?topic)
+     Then
+       R_Notify(?distributor, ?communicator, ?topic, ?message) 
+   }
+
+   // A distributor commits to a communicator that it will register
+   // all valid and unique topics
+   Commitment {
+     Debtor ?distributor;
+     Creditor ?communicator;
+     Antecedent
+      C_Request {
+       Who ?communicator;
+       Whom ?distributor;
+       What R_RegisterTopic(?communicator, ?distributor, ?topic)
+       }
+      AND S_ValidTopic(?topic)
+      AND NOT (S_RegisteredTopic(?_, ?_, ?topic))
+     Consequent
+      D_Apply (R_RegisterTopic(?communicator, ?distributor, ?topic))
+   }
+
+   // Directory lookup (i.e., the topics registered with the distributor)
+   Commitment {
+     Debtor ?distributor;
+     Creditor ?communicator;
+     Antecedent
+      C_Request {
+       Who ?communicator;
+       Whom ?distributor;
+       What D_Evaluate (S_RegisteredTopic(?distributor, ?_, ?_))
+     }
+     Consequent
+      C_Inform {
+       Who ?distributor;
+       Whom ?communicator;
+       What S_RegisteredTopic(?distributor, ?_, ?_)
+      }
+   }
+
+   // A distributor commits to a communicator that it will (1) send
+   // notifications of all and only the messages published to a topic
+   // to all and only the subscribers of that topic; (2) send the
+   // above notifications in the order in which the messages are
+   // published to it
+
+   // We don't formalize the following because it doesn't appear it
+   // will be enforced through our governance mechanism
+   Commitment {
+     Debtor ?distributor;
+     Creditor ?communicator;
+     Antecedent
+... DOMAIN DETAILS ...
+     Consequent
+... DOMAIN DETAILS ...
+   }
+
+   // Further, a distributor commits to the exchange space that it
+   // won't include as a subscriber for a topic any communicator who
+   // hasn't currently requested to be a subscriber for that topic
+   Commitment {
+     Debtor ?distributor;
+     Creditor theOrg;
+     Antecedent
+... DOMAIN DETAILS ...
+     Consequent
+... DOMAIN DETAILS ...
+   }
+
+
+}
+
+}

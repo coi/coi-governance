@@ -1,0 +1,180 @@
+// Capitalized words describe predicates or constants that apply to
+// our OOI-wide domain models
+
+// Lowercase words refer to predicates or constants that are specific
+// to the particular situation being defined
+
+// A leading ? identifies a variable, e.g., ?sensor
+
+// OOI:Public means has a legitimate OOI account (and possibly nothing
+// else) 
+
+// Below we define an Org that we call CommunityOrg; this Org lives within
+// the OOI, which would itself be an Org that provides identity to its
+// members and enforces sanctions such as ejection.  Hence, OOI serves
+// as an institution in the sense of eBay or NCSU.
+
+// We could include the idea of inheriting from other, more general,
+// Orgs.  In that case, some roles (e.g., leader) could be inherited as
+// well. 
+// We could say
+// Org CommunityOrg extends ResourceOrg ...
+// However, the semantics of inheritance can be tricky
+
+Org CommunityOrg Within OOI {
+  // Below, *this* refers to the current instance of DataOrg
+
+ Predicate:Domain SharableResource;
+  
+ Capability:Communicative Request, Grant; //needs Who, Whom, What
+
+ Capability:Organizational Admit, Eject; //needs Who, Org, Role, Whom
+ Capability:Organizational Contribute, Withdraw;
+ Capability:Organizational ExamineResources, ExamineMembers;
+ Predicate:Resource Owns(?Who, ?What);
+ Capability:Domain Apply, Evaluate;
+ Predicate:Resource inState(state, ?resource, ?capability);
+ Predicate:Resource SupportsCapability(?resource, ?capability);
+
+ Predicate:Organizational CommunityMember;
+ Predicate:Organizational CommunityResource;
+
+  // Contribute and Withdraw apply at the granularity of a capability; we 
+  // can consider capabilities that bundle other capabilities
+
+  //Only the owner of a resource can contribute it
+  Contribute(?member, this, ?resource, ?capability) causes 
+    CommunityResource(this, ?resource, ?capability);
+
+  //Only the owner of a resource or community can withdraw it
+  Withdraw(?member, this, ?resource, ?capability) causes 
+    NOT CommunityResource(this, ?resource, ?capability);
+
+  Role Org Singleton {
+    
+    Power {
+      If OOI:Public(?member)
+	Then Admit(?leader, this, CommunityOrg:*, member)
+	}
+
+    Power {
+      If CommunityOrg:*(this, ?member)
+	Then Eject(?leader, this, CommunityOrg:*, ?member)
+	}
+
+    Power {
+      If CommunityResource(this, ?resource, ?capability)
+	Then Withdraw(?leader, this, ?resource, ?capability)
+	}
+
+    Capability {
+      Evaluate(CommunityMember(this, ?member));
+    }
+
+    Capability {
+      Evaluate(CommunityResource(this, ?resource, ?capability));
+    }
+
+  }
+
+  Role member (?member) {
+    Qualification OOI:Public(?member);
+
+    //member viewed as a resource owner
+    Power {
+      If SharableResource(?resource)
+	AND Owns(?member, ?resource)
+	AND SupportsCapability(?resource, ?capability)
+	Then Contribute(?member, this, ?resource, ?capability)
+	}
+
+    //member viewed as a resource owner
+    Power {
+      If CommunityResource(this, ?resource, ?capability)
+	AND Owns(?member, ?resource)
+	Then Withdraw(?member, this, ?resource, ?capability)
+	}
+
+    //member viewed as a resource owner
+    Prohibition {
+      If CommunityResource(this, ?resource, ?capability)
+	AND inState(acquired, ?resource, ?capability) // acquired as in OV-5
+	ThenMayNot Withdraw(?member, this, ?resource, ?capability)
+	}
+
+    //member viewed as a resource user
+    Authorization {
+      If CommunityResource(this, ?resource, ?capability)
+	ThenMay Apply(?member, ?resource, ?capability)
+	}
+
+    //member viewed as a resource user
+    Prohibition {
+      If NOT CommunityOrg:member(?outsider)
+	AND CommunityResource(this, ?resource, ?capability)
+	ThenMayNot Share(?member, ?outsider, ?resource, ?capability);
+    }
+
+    Sanction {
+      Sanctioner ?leader;
+      Penalty Eject(?leader, this, OOI:member, ?member); 
+      // Additionally, Eject may put the member into OOI:NonGrata
+    }
+
+    Commitment {
+      Debtor ?leader;
+      Creditor ?member;
+      Antecedent
+	Request {
+	Who ?member;
+	Whom ?leader;
+	What Apply(?member, ?resource, ?capability)
+	  }
+      AND
+	inState(availableCapacity, ?resource, ?capability)
+
+	Consequent 
+	Grant {
+	Who ?leader;
+	Whom ?member;
+	What permission(Apply(?member, ?resource, ?capability))
+	  }
+    }
+
+    Commitment {
+      Debtor ?leader;
+      Creditor ?member;
+      Antecedent
+	Request {
+	Who ?member;
+	Whom ?leader;
+	What ExamineResources(this, ?member)
+	  }
+      Consequent 
+	Inform {
+	Who ?leader;
+	Whom ?member;
+	What CommunityResource(this, ?resource, ?capability)
+	  }
+    }
+
+    Commitment {
+      Debtor ?leader;
+      Creditor ?member;
+      Antecedent
+	Request {
+	Who ?member;
+	Whom ?leader;
+	What ExamineMembers(this, ?member)
+	  }
+      Consequent 
+	Inform {
+	Who ?leader;
+	Whom ?member;
+	What CommunityMember(this, ?m)
+	  }
+    }
+
+  }
+
+}

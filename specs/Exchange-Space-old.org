@@ -1,0 +1,198 @@
+// Derived FROM community.org and PeerNegotiate.org
+
+// Capitalized words describe predicates or constants that apply to
+// our OOI-wide domain models
+
+// Lowercase words refer to predicates or constants that are specific
+// to the particular situation being defined
+
+// A leading ? identifies a variable, e.g., ?sensor
+
+// OOI:Public means has a legitimate OOI account (and possibly nothing
+// else) 
+
+// Below we define an Org that we call ExchangeSpaceOrg; this Org lives within
+// the OOI, which would itself be an Org that provides identity to its
+// members and enforces sanctions such as ejection.  Hence, OOI serves
+// as an institution in the sense of eBay or NCSU.
+
+// We could include the idea of inheriting from other, more general,
+// Orgs.  In that case, some roles (e.g., leader) could be inherited as
+// well. 
+// We could say
+// Org ExchangeSpaceOrg extends ResourceOrg ...
+// However, the semantics of inheritance can be tricky
+
+// The following are primitives that we should consider deleting if we
+// cannot find convincing examples or use cases for:
+//  Predicate:Domain SharableResource;
+  
+
+
+Org ExchangeSpaceOrg Within OOI {
+  // Below, *thisOrg* refers to the current instance of ExchangeSpaceOrg
+
+ //Predicate:Domain SharableResource;
+  
+ Capability:Communicative Request (?Who, ?Whom, ?What);
+ Capability:Normative Grant(?Who, ?Whom, ?What);
+
+ Capability:Organizational Admit(?Who, ?Org, ?Role, ?Whom);
+ Capability:Organizational Eject(?Who, ?Org, ?Role, ?Whom);
+
+ Capability:Organizational Contribute(?owner, ?anOrg, ?aResource, ?aCapability);
+ Capability:Organizational Withdraw(?owner, ?anOrg, ?aResource, ?aCapability);
+
+ //Capability:Organizational Share(?member, ?outsider, ?resource, ?capability);
+
+ Predicate:OrgDomain RegisteredResource (?anOrg, ?aResource, ?aCapability);
+ Predicate:OrgDomain Participant (?anOrg, ?aPrincipal, ?aRole);
+
+ Predicate:Resource Owns(?Who, ?What);
+
+ Capability:Domain Apply(?member, ?resource, ?capability);
+ Capability:Domain Evaluate(?expression);
+
+ Predicate:Resource inState(state, ?resource, ?capability);
+ Predicate:Resource Supports(?resource, ?capability);
+
+  // Contribute and Withdraw apply at the granularity of a capability; we 
+  // can consider capabilities that bundle other capabilities
+
+  //Only the owner of a resource can contribute it
+  Contribute(?member, thisOrg, ?resource, ?capability) causes 
+    RegisteredResource(thisOrg, ?resource, ?capability);
+
+  //Only the owner of a resource or community can withdraw it
+  Withdraw(?member, thisOrg, ?resource, ?capability) causes 
+    NOT RegisteredResource(thisOrg, ?resource, ?capability);
+
+
+  Role Org Singleton {
+// This is the present exchange space
+// The constant *thisOrg* refers to this Singleton throughout this specification
+    
+    Power {
+// If something is a legitimate OOI entity, we can admit it as playing
+// the role Reader or the role Writer
+      If OOI:Public(?entity)
+      Then Admit(thisOrg, thisOrg, ExchangeSpaceOrg:*, ?entity)
+    }
+
+    Power {
+// We can eject any entity from any role
+      If ExchangeSpaceOrg:*(thisOrg, ?anyRole)
+      Then Eject(thisOrg, thisOrg, ExchangeSpaceOrg:*, ?anyRole)
+    }
+
+    Can {
+      Evaluate(Participant(thisOrg, ?member, ?aRole));
+    }
+
+    Can {
+      Evaluate(RegisteredResource(thisOrg, ?resource, ?capability));
+    }
+
+  }
+
+  Role GenericMember (?member) {
+    Qualification OOI:Public(?member);
+
+  }
+
+  Role Reader (?reader) extends GenericMember {
+// This is the role for any entity that becomes a "user client" of this
+// exchange space
+
+    Power {
+      If RegisteredResource(thisOrg, ?resource, ?capability)
+       AND Owns(?owner, ?resource)
+      Then
+         Request {
+          Who ?reader;
+          Whom ?owner;
+          What Apply(?reader, ?resource, ?capability)
+         }
+      }
+
+    Commitment {
+      Debtor thisOrg;
+      Creditor ?reader;
+      Antecedent
+       Request {
+        Who ?reader;
+        Whom thisOrg;
+        What Evaluate (RegisteredResource(thisOrg, ?resource, ?capability))
+      }
+      Consequent 
+       Inform {
+        Who thisOrg;
+        Whom ?reader;
+        What RegisteredResource(thisOrg, ?resource, ?capability)
+   }
+    }
+
+    Commitment {
+      Debtor thisOrg;
+      Creditor ?reader;
+      Antecedent
+       Request {
+        Who ?reader;
+        Whom thisOrg;
+        What Evaluate (Participant(thisOrg, ?m, ?anyRole))
+      }
+      Consequent 
+       Inform {
+        Who thisOrg;
+        Whom ?reader;
+        What Participant(thisOrg, ?m, ?anyRole)
+       }
+    }
+
+
+}
+
+  Role Writer (?writer) extends GenericMember {
+// This is the role for any entity that becomes an exchange point in this
+// exchange space
+
+    Power {
+      If SharableResource(?resource)
+       AND Owns(?writer, ?resource)
+       AND Supports(?resource, ?capability)
+      Then Contribute(?writer, thisOrg, ?resource, ?capability)
+     }
+
+    Power {
+      If RegisteredResource(thisOrg, ?resource, ?capability)
+       AND Owns(?writer, ?resource)
+      Then Withdraw(?writer, thisOrg, ?resource, ?capability)
+     }
+
+    Prohibition {
+      If RegisteredResource(thisOrg, ?resource, ?capability)
+       AND inState(acquired, ?resource, ?capability) // acquired as in OV-5
+      ThenMayNot Withdraw(?writer, thisOrg, ?resource, ?capability)
+ }
+
+// The following is not a power but could be a qualification or we can
+// perhaps omit it
+ Power {
+      If RegisteredResource(thisOrg, ?resource, ?capability)
+       AND Owns(?writer, ?resource)
+	AND Participant(thisOrg, ?user, ?role)
+	Then Authorize(?writer, ?user, Apply(?role, ?resource, ?capability))
+    }
+
+    Power {
+      If RegisteredResource(thisOrg, ?resource, ?capability)
+       AND Owns(?writer, ?resource)
+	AND Participant(thisOrg, ?user, ?role)
+	AND Authorize(?writer, ?user, Apply(?user, ?resource, ?capability))
+      Then WithdrawAuthorization(?writer, ?user, Apply(?user, ?resource, ?capability))
+    }
+
+
+}
+
+}

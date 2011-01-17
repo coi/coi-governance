@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from AuthorizationServiceService WSDL service -->
+
+  <service name="AuthorizationService" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://service.auth.gov"/>
+      <parameter name="wsdlServiceElement" value="AuthorizationServiceService"/>
+      <parameter name="schemaQualified" value="http://service.auth.gov"/>
+      <parameter name="wsdlServicePort" value="AuthorizationService"/>
+      <parameter name="className" value="gov.auth.service.AuthorizationService"/>
+      <parameter name="wsdlPortType" value="AuthorizationService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://service.auth.gov" xmlns:retNS="http://service.auth.gov" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="addAttribute" qname="operNS:addAttribute" returnQName="retNS:addAttributeReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:org_id" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:subject_id" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:key" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:value" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://service.auth.gov" xmlns:retNS="http://service.auth.gov" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="checkAuthorization" qname="operNS:checkAuthorization" returnQName="retNS:checkAuthorizationReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:org_id" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:subject" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:predicate" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:object" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://service.auth.gov" xmlns:retNS="http://service.auth.gov" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="grantAuthorization" qname="operNS:grantAuthorization" returnQName="retNS:grantAuthorizationReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:org_id" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:subject" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:predicate" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:object" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://service.auth.gov" xmlns:retNS="http://service.auth.gov" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="revokeAuthorization" qname="operNS:revokeAuthorization" returnQName="retNS:revokeAuthorizationReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:org_id" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:subject" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:predicate" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:object" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://service.auth.gov" xmlns:retNS="http://service.auth.gov" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="attestAttribute" qname="operNS:attestAttribute" returnQName="retNS:attestAttributeReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:org_id" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:subject_id" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:key" type="tns:string"/>
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:value" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://service.auth.gov" xmlns:retNS="http://service.auth.gov" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="registerOrg" qname="operNS:registerOrg" returnQName="retNS:registerOrgReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:org_id" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://service.auth.gov" xmlns:retNS="http://service.auth.gov" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="deregisterOrg" qname="operNS:deregisterOrg" returnQName="retNS:deregisterOrgReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://service.auth.gov" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:org_id" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="grantAuthorization deregisterOrg revokeAuthorization checkAuthorization registerOrg attestAttribute addAttribute"/>
+
+  </service>
+</deployment>

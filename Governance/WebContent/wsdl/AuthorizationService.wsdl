@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://service.auth.gov" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://service.auth.gov" xmlns:intf="http://service.auth.gov" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://service.auth.gov" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="addAttribute">
+    <complexType>
+     <sequence>
+      <element name="org_id" type="xsd:string"/>
+      <element name="subject_id" type="xsd:string"/>
+      <element name="key" type="xsd:string"/>
+      <element name="value" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="addAttributeReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="checkAuthorization">
+    <complexType>
+     <sequence>
+      <element name="org_id" type="xsd:string"/>
+      <element name="subject" type="xsd:string"/>
+      <element name="predicate" type="xsd:string"/>
+      <element name="object" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="checkAuthorizationResponse">
+    <complexType>
+     <sequence>
+      <element name="checkAuthorizationReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="grantAuthorization">
+    <complexType>
+     <sequence>
+      <element name="org_id" type="xsd:string"/>
+      <element name="subject" type="xsd:string"/>
+      <element name="predicate" type="xsd:string"/>
+      <element name="object" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="grantAuthorizationResponse">
+    <complexType>
+     <sequence>
+      <element name="grantAuthorizationReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="revokeAuthorization">
+    <complexType>
+     <sequence>
+      <element name="org_id" type="xsd:string"/>
+      <element name="subject" type="xsd:string"/>
+      <element name="predicate" type="xsd:string"/>
+      <element name="object" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="revokeAuthorizationResponse">
+    <complexType>
+     <sequence>
+      <element name="revokeAuthorizationReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="attestAttribute">
+    <complexType>
+     <sequence>
+      <element name="org_id" type="xsd:string"/>
+      <element name="subject_id" type="xsd:string"/>
+      <element name="key" type="xsd:string"/>
+      <element name="value" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="attestAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="attestAttributeReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="registerOrg">
+    <complexType>
+     <sequence>
+      <element name="org_id" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="registerOrgResponse">
+    <complexType>
+     <sequence>
+      <element name="registerOrgReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deregisterOrg">
+    <complexType>
+     <sequence>
+      <element name="org_id" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deregisterOrgResponse">
+    <complexType>
+     <sequence>
+      <element name="deregisterOrgReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="grantAuthorizationRequest">
+
+      <wsdl:part element="impl:grantAuthorization" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="checkAuthorizationRequest">
+
+      <wsdl:part element="impl:checkAuthorization" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="deregisterOrgRequest">
+
+      <wsdl:part element="impl:deregisterOrg" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="attestAttributeResponse">
+
+      <wsdl:part element="impl:attestAttributeResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="registerOrgResponse">
+
+      <wsdl:part element="impl:registerOrgResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAttributeRequest">
+
+      <wsdl:part element="impl:addAttribute" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="revokeAuthorizationResponse">
+
+      <wsdl:part element="impl:revokeAuthorizationResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="grantAuthorizationResponse">
+
+      <wsdl:part element="impl:grantAuthorizationResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="revokeAuthorizationRequest">
+
+      <wsdl:part element="impl:revokeAuthorization" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="deregisterOrgResponse">
+
+      <wsdl:part element="impl:deregisterOrgResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="registerOrgRequest">
+
+      <wsdl:part element="impl:registerOrg" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="checkAuthorizationResponse">
+
+      <wsdl:part element="impl:checkAuthorizationResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAttributeResponse">
+
+      <wsdl:part element="impl:addAttributeResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="attestAttributeRequest">
+
+      <wsdl:part element="impl:attestAttribute" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="AuthorizationService">
+
+      <wsdl:operation name="addAttribute">
+
+         <wsdl:input message="impl:addAttributeRequest" name="addAttributeRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addAttributeResponse" name="addAttributeResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="checkAuthorization">
+
+         <wsdl:input message="impl:checkAuthorizationRequest" name="checkAuthorizationRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:checkAuthorizationResponse" name="checkAuthorizationResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="grantAuthorization">
+
+         <wsdl:input message="impl:grantAuthorizationRequest" name="grantAuthorizationRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:grantAuthorizationResponse" name="grantAuthorizationResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="revokeAuthorization">
+
+         <wsdl:input message="impl:revokeAuthorizationRequest" name="revokeAuthorizationRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:revokeAuthorizationResponse" name="revokeAuthorizationResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="attestAttribute">
+
+         <wsdl:input message="impl:attestAttributeRequest" name="attestAttributeRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:attestAttributeResponse" name="attestAttributeResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="registerOrg">
+
+         <wsdl:input message="impl:registerOrgRequest" name="registerOrgRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:registerOrgResponse" name="registerOrgResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deregisterOrg">
+
+         <wsdl:input message="impl:deregisterOrgRequest" name="deregisterOrgRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:deregisterOrgResponse" name="deregisterOrgResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="AuthorizationServiceSoapBinding" type="impl:AuthorizationService">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="addAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="checkAuthorization">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="checkAuthorizationRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="checkAuthorizationResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="grantAuthorization">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="grantAuthorizationRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="grantAuthorizationResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="revokeAuthorization">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="revokeAuthorizationRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="revokeAuthorizationResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="attestAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="attestAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="attestAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="registerOrg">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="registerOrgRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="registerOrgResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deregisterOrg">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="deregisterOrgRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="deregisterOrgResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="AuthorizationServiceService">
+
+      <wsdl:port binding="impl:AuthorizationServiceSoapBinding" name="AuthorizationService">
+
+         <wsdlsoap:address location="http://localhost:8080/Governance/services/AuthorizationService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

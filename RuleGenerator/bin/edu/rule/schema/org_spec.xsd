@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ooi.org/org_spec" xmlns:tns="http://www.ooi.org/org_spec" elementFormDefault="qualified">
+
+
+
+    <complexType name="ACLMessageType">
+    	<sequence>
+    		<element name="desc" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="action" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="sender" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="receiver" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="replyTo" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="replyBy" type="dateTime" maxOccurs="1" minOccurs="0"></element>
+    		<element name="content" type="tns:ContentType" maxOccurs="1" minOccurs="0"></element>
+    		<element name="language" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="encoding" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="ontology" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="protocol" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="replyWith" type="string" maxOccurs="1" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+    
+
+    <complexType name="ContentType">
+    	<sequence>
+    		<element name="fact" type="tns:EventType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="param" type="tns:ParameterType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="OrgType">
+    	<sequence>
+    		<element name="desc" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="org_name" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="representative" type="string" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="power" type="tns:PowerType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    		<element name="role" type="tns:RoleType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="PowerType">
+    	<sequence>
+    		<element name="desc" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="name" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="action" type="tns:EventType" maxOccurs="1" minOccurs="1"></element>
+    		<element name="authorization" type="tns:AuthorizationType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="RoleType">
+    	<sequence>
+    		<element name="desc" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="name" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="power" type="tns:PowerType" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="capability" type="tns:CapabilityType" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="commitment" type="tns:CommitmentType" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="prohibition" type="tns:ProhibitionType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="CapabilityType">
+    	<sequence>
+    		<element name="name" type="string" maxOccurs="1"
+    			minOccurs="1">
+    		</element>
+    		<element name="action" type="tns:EventType" maxOccurs="1"
+    			minOccurs="1">
+    		</element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="CommitmentType">
+    	<sequence>
+    		<element name="desc" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="debtor" type="string"></element>
+    		<element name="creditor" type="string"></element>
+    		<element name="antecedent" type="tns:EventType" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="consequent" type="tns:EventType" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="EventType">
+    	<sequence>
+    		<element name="name" type="string" maxOccurs="1"
+    			minOccurs="1">
+    		</element>
+    		<element name="param" type="tns:ParameterType"
+    			maxOccurs="unbounded" minOccurs="1">
+    		</element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="ParameterType">
+    	<sequence>
+    		<element name="name" type="string" maxOccurs="1"
+    			minOccurs="1">
+    		</element>
+    		<choice>
+    			<element name="float_value" type="float"></element>
+    			<element name="string_value" type="string"></element>
+    			<element name="boolean_value" type="boolean"></element>
+    			<element name="int_value" type="int"></element>
+    		</choice>
+    	</sequence>
+    </complexType>
+
+    <complexType name="AuthorizationType">
+    	<sequence>
+    		<element name="authorization_id" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="action" type="tns:EventType" maxOccurs="1" minOccurs="1"></element>
+    		<element name="grantedBy" type="string" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="grantedTo" type="string" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <element name="org" type="tns:OrgType"></element>
+
+    <complexType name="ProhibitionType">
+    	<sequence>
+    		<element name="desc" type="string" maxOccurs="1" minOccurs="0"></element>
+    		<element name="prohibition_id" type="string"></element>
+    		<element name="action" type="tns:EventType" maxOccurs="unbounded" minOccurs="1"></element>
+    		<element name="sanction" type="tns:EventType" maxOccurs="unbounded" minOccurs="1"></element>
+    	</sequence>
+    </complexType>
+
+</schema>

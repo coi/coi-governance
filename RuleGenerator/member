@@ -1,0 +1,37 @@
+(defrule Rule_8
+"Desc: Power: null "
+	(policy (id 9))
+ => 
+
+	(assert (PROPOSE(org OOI))
+)
+(defrule Rule_10
+"Desc: Power: null "
+	(policy (id 11))
+ => 
+
+	(assert (ACCEPT(org OOI)(member mem_id))
+)
+(defrule Rule_12
+"Desc: Power: null "
+	(policy (id 13))
+ => 
+
+	(assert (REJECT(org OOI)(member member_id))
+)
+(defrule Rule_14
+"Desc: Commitment: null "
+	(eval_request (attribute_name value))
+	(policy (id 15))
+ => 
+
+	(assert (eval_response(attribute_name null))
+)
+(defrule Rule_16
+"Desc: Prohibition: null "
+	(SHARE (object obj_id))
+	(policy (id 17))
+ => 
+
+	(assert (EJECT(org OOI)(member mem_id))
+)

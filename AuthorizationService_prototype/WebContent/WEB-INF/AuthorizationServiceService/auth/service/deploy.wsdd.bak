@@ -1,0 +1,42 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from AuthorizationServiceService WSDL service -->
+
+  <service name="AuthorizationService" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://service.auth"/>
+      <parameter name="wsdlServiceElement" value="AuthorizationServiceService"/>
+      <parameter name="schemaQualified" value="http://service.auth"/>
+      <parameter name="wsdlServicePort" value="AuthorizationService"/>
+      <parameter name="className" value="auth.service.AuthorizationServiceSoapBindingImpl"/>
+      <parameter name="wsdlPortType" value="AuthorizationService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="grantAuthorization" qname="operNS:grantAuthorization" xmlns:operNS="http://service.auth" returnQName="retNS:grantAuthorizationReturn" xmlns:retNS="http://service.auth" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:subject" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:predicate" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:object" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="revokeAuthorization" qname="operNS:revokeAuthorization" xmlns:operNS="http://service.auth" returnQName="retNS:revokeAuthorizationReturn" xmlns:retNS="http://service.auth" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:subject" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:predicate" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:object" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="attestAttribute" qname="operNS:attestAttribute" xmlns:operNS="http://service.auth" returnQName="retNS:attestAttributeReturn" xmlns:retNS="http://service.auth" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:key" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:value" xmlns:pns="http://service.auth" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="query" qname="operNS:query" xmlns:operNS="http://service.auth" returnQName="retNS:queryReturn" xmlns:retNS="http://service.auth" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+      </operation>
+      <parameter name="allowedMethods" value="grantAuthorization query revokeAuthorization attestAttribute"/>
+
+  </service>
+</deployment>
